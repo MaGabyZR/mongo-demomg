@@ -31,20 +31,21 @@ async function createCourse(){
 }
 
 async function getCourses(){
-
+    const pageNumber = 2;
+    const pageSize = 10;                    //In real apps, you call your API, do not hard code them. Ex.: /api/courses?pageNumber=2&pageSize=10
     //const courses = await Course.find(); //for getting all courses.
     const courses = await Course           //for filtering the query with more details.With all the options shown bellow. 
         //.find()       //to used the logical operators. 
         //.or([ { author: 'MaGaby'}, { isPublished: true }])      //to get courser authored by MG or published. => Logical or operator.
         .find({ author: 'MaGaby', isPublished: true})
         //.find({ price: 10 })               //to get only the courses that cost 10.
-        //.find({ price: { $gt: 10, $lte: 20 } })        //to get courses greater than 10. With the {$} you can uses any of the comparison operators. 
-        //.find({ price: { $in: [ 10, 15, 20 ] } })      //to get the courses in that price range. 
+        //.find({ price: { $gt: 10, $lte: 20 } })         //to get courses greater than 10. With the {$} you can uses any of the comparison operators. 
+        //.find({ price: { $in: [ 10, 15, 20 ] } })       //to get the courses in that price range. 
         //.find({ author: /^M/ })                         //to use a regular expression, and get any course whose author starts with M /^M/
         //.find({ author: /Gaby$/ })                      //to use a regular expression, and get any course whose author ends with M /Gaby$/
-        //.find({ author: /.*Gaby.*/ })                      //to use a regular expression, and get any course whose author contains Gaby /.*Gaby.*/
-        
-        .limit(10)
+        //.find({ author: /.*Gaby.*/ })                   //to use a regular expression, and get any course whose author contains Gaby /.*Gaby.*/
+        .skip((pageNumber - 1) * pageSize )               //to get the documents in a given page. 
+        .limit(pageSize)
         .sort({ name: 1 })                //1 indicates ascending order, descending is -1. 
         .countDocuments();
         //.select({ name: 1, tags: 1 });
