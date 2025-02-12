@@ -33,7 +33,10 @@ async function createCourse(){
 async function getCourses(){
     //const courses = await Course.find(); //for getting all courses.
     const courses = await Course           //for filtering the query with more details.
-        .find({ author: 'MaGaby', isPublished: true})
+        //.find({ author: 'MaGaby', isPublished: true})
+        //.find({ price: 10 })               //to get only the courses that cost 10.
+        //.find({ price: { $gt: 10, $lte: 20 } })        //to get courses greater than 10. With the {$} you can uses any of the comparison operators. 
+        .find({ price: { $in: [ 10, 15, 20 ] } })            //to get the courses in that price range. 
         .limit(10)
         .sort({ name: 1 })                //1 indicates ascending order, descending is -1. 
         .select({ name: 1, tags: 1 });
