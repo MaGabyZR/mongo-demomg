@@ -78,7 +78,7 @@ async function getCourses(){
 
     //2nd approach: Update first. Update directly in the database and optionally get the updated document aswell.
 
-    async function updateCourse(id) {
+/*     async function updateCourse(id) {
         const course = await Course.findByIdAndUpdate(id, { 
             $set: { 
                 author: 'Jason', 
@@ -88,7 +88,15 @@ async function getCourses(){
             console.log(course);
     }
     
-    updateCourse('5a68fde3f09ad7646ddec17e');
+    updateCourse('5a68fde3f09ad7646ddec17e'); */
+
+    async function removeCourse(id) {
+        //const result = await Course.deleteOne({ _id: id });
+        const course = await Course.findByIdAndDelete(id);
+        console.log(course);
+    }
+    
+    removeCourse('5a68fde3f09ad7646ddec17e');
     
 //createCourse();
 //getCourses();
