@@ -46,13 +46,51 @@ async function getCourses(){
         //.find({ author: /.*Gaby.*/ })                   //to use a regular expression, and get any course whose author contains Gaby /.*Gaby.*/
         .skip((pageNumber - 1) * pageSize )               //to get the documents in a given page. 
         .limit(pageSize)
-        .sort({ name: 1 })                //1 indicates ascending order, descending is -1. 
-        .countDocuments();
-        //.select({ name: 1, tags: 1 });
+        .sort({ name: 1 })                                //1 indicates ascending order, descending is -1. 
+        .countDocuments()
+        .select({ name: 1, tags: 1 });
     console.log(courses);
 }
 
+//async function updateCourse(id){
+/*     //1st approach: Querry first.
+    // findById()
+    //Modify its properties
+    //save()
+    const course = await Course.findById(id);
+    if (!course) return;
+
+    if (course.isPublished) return; 
+
+   //Option A
+    course.isPublished = true;
+    course.author = 'Another author';
+
+/*      //Option B
+    course.set({
+        isPublished: true,
+        author: 'Another author'
+    });  */
+
+    //const result = await course.save();
+    //console.log(result);
+    // } */
+
+    //2nd approach: Update first. Update directly in the database and optionally get the updated document aswell.
+
+    async function updateCourse(id) {
+        const course = await Course.findByIdAndUpdate(id, { 
+            $set: { 
+                author: 'Jason', 
+                isPublished: false 
+            } 
+        }, { new: true });
+            console.log(course);
+    }
+    
+    updateCourse('5a68fde3f09ad7646ddec17e');
+    
 //createCourse();
-getCourses();
+//getCourses();
 
 
