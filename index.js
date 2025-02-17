@@ -7,11 +7,27 @@ mongoose.connect('mongodb://localhost/playground') //to reference the Mongodb in
 
 //Define the schema for the documents. //Data validation
 const courseSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: {                                 //use the require validator. 
+        type: String, 
+        required: true,
+        minlength: 5,
+        maslength: 255 
+    },
+    category: {
+        type: String,
+        required: true,
+        enum: [ 'web', 'mobile', 'network']
+    },
     author: String,
     tags: [ String ],
     date: { type: Date, default: Date.now}, //it´s defined to have a default value. 
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {                                //use the required validator as a boolean.
+        type: Number,
+        required: function(){ return isPublished; },
+        min: 10,
+        max: 200
+    }
 });
 
 //Compile the schema into a model.
@@ -19,10 +35,12 @@ const Course = mongoose.model('Course', courseSchema); //Class Course.
 
 async function createCourse(){
     const course = new Course({                        //Object of the Course Class. 
-        //name: 'Angular course',
+        name: 'Angular course',
+        category: '-',
         author: 'MaGaby',
         tags: ['angular', 'frontend'],
-        isPublished: true
+        isPublished: true,
+        price: 15
     });
     
     //Save this document to our DB, wrap it it a try-catch block to handles a failure to fulfill the promise. 
