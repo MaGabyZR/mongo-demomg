@@ -5,9 +5,9 @@ mongoose.connect('mongodb://localhost/playground') //to reference the Mongodb in
     .then(() => console.log('Connected to MongoDB...'))
     .catch(err => console.error('Could not connect to MongoDB...', err));
 
-//Define the schema for the documents.
+//Define the schema for the documents. //Data validation
 const courseSchema = new mongoose.Schema({
-    name: String,
+    name: { type: String, required: true },
     author: String,
     tags: [ String ],
     date: { type: Date, default: Date.now}, //it´s defined to have a default value. 
@@ -19,15 +19,20 @@ const Course = mongoose.model('Course', courseSchema); //Class Course.
 
 async function createCourse(){
     const course = new Course({                        //Object of the Course Class. 
-        name: 'Angular course',
+        //name: 'Angular course',
         author: 'MaGaby',
         tags: ['angular', 'frontend'],
         isPublished: true
     });
     
-    //Save this document to our DB
+    //Save this document to our DB, wrap it it a try-catch block to handles a failure to fulfill the promise. 
+    try{ 
     const result = await course.save(); //async operation that returns a promise, this why all the code block is wrapped inside an async function. 
     console.log(result);
+    }
+    catch(ex){
+        console.log(ex.message);
+    }
 }
 
 async function getCourses(){
@@ -96,9 +101,9 @@ async function getCourses(){
         console.log(course);
     }
     
-    removeCourse('5a68fde3f09ad7646ddec17e');
+    //removeCourse('5a68fde3f09ad7646ddec17e');
     
-//createCourse();
+createCourse();
 //getCourses();
 
 
