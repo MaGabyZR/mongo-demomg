@@ -19,12 +19,21 @@ const courseSchema = new mongoose.Schema({
         enum: [ 'web', 'mobile', 'network']
     },
     author: String,
-    tags: [ String ],
+    tags: {                                 //Custom validator, so every course should have at least one tag.
+        type: Array,
+        validate: {
+            validator: function(value){
+                return value && value.length > 0; 
+            },
+            message: 'A course should have at least one tag.'
+        }
+
+    },
     date: { type: Date, default: Date.now}, //it´s defined to have a default value. 
     isPublished: Boolean,
     price: {                                //use the required validator as a boolean.
         type: Number,
-        required: function(){ return isPublished; },
+        required: function(){ return this.isPublished; },
         min: 10,
         max: 200
     }
@@ -36,9 +45,9 @@ const Course = mongoose.model('Course', courseSchema); //Class Course.
 async function createCourse(){
     const course = new Course({                        //Object of the Course Class. 
         name: 'Angular course',
-        category: '-',
+        category: 'web',
         author: 'MaGaby',
-        tags: ['angular', 'frontend'],
+        tags: [],
         isPublished: true,
         price: 15
     });
