@@ -7,18 +7,23 @@ mongoose.connect('mongodb://localhost/playground') //to reference the Mongodb in
 
 //Define the schema for the documents. //Data validation
 const courseSchema = new mongoose.Schema({
-    name: {                                 //use the require validator. 
+    name: {                                 //use the require validator, in a schema type object. 
         type: String, 
         required: true,
         minlength: 5,
         maslength: 255 
     },
+    //Schema type object.
     category: {
         type: String,
         required: true,
-        enum: [ 'web', 'mobile', 'network']
+        enum: [ 'web', 'mobile', 'network'],
+        lowercase: true,
+        //uppercase: true,
+        trim: true
     },
     author: String,
+    /* //This is a synchronous validator.
     tags: {                                 //Custom validator, so every course should have at least one tag.
         type: Array,
         validate: {
@@ -26,8 +31,23 @@ const courseSchema = new mongoose.Schema({
                 return value && value.length > 0; 
             },
             message: 'A course should have at least one tag.'
-        }
+        } */
 
+    //This a an async validator.
+    tags: {
+        type: Array,
+        validate: {
+            isAsync: true,
+            validator: function(value) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {                              // Do async work.
+                        const result = value && value.length > 0; // Check if at least one tag exists
+                        resolve(result);
+                    }, 4000);
+                });
+            },
+            message: 'A course should have at least one tag.'
+        }
     },
     date: { type: Date, default: Date.now}, //it´s defined to have a default value. 
     isPublished: Boolean,
@@ -35,7 +55,9 @@ const courseSchema = new mongoose.Schema({
         type: Number,
         required: function(){ return this.isPublished; },
         min: 10,
-        max: 200
+        max: 200,
+        get: value => Math.round(value),
+        set: value => Math.round(value)
     }
 });
 
@@ -47,9 +69,9 @@ async function createCourse(){
         name: 'Angular course',
         category: 'web',
         author: 'MaGaby',
-        tags: [],
+        tags: ['frontend'],
         isPublished: true,
-        price: 15
+        price: 15.8
     });
     
     //Save this document to our DB, wrap it it a try-catch block to handles a failure to fulfill the promise. 
@@ -57,8 +79,9 @@ async function createCourse(){
     const result = await course.save(); //async operation that returns a promise, this why all the code block is wrapped inside an async function. 
     console.log(result);
     }
-    catch(ex){
-        console.log(ex.message);
+    catch(ex){                          //ex: exception.
+        for (field in ex.errors)
+            console.log(ex.errors[field].message);                 
     }
 }
 
@@ -80,7 +103,7 @@ async function getCourses(){
         .limit(pageSize)
         .sort({ name: 1 })                                //1 indicates ascending order, descending is -1. 
         .countDocuments()
-        .select({ name: 1, tags: 1 });
+        .select({ name: 1, tags: 1, price: 1 });
     console.log(courses);
 }
 
